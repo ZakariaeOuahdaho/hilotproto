@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "855364620396",
+    "project_id": "hilotproto",
+    "storage_bucket": "hilotproto.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855364620396:android:b3f29ddfed33f2bf6e4849",
+        "android_client_info": {
+          "package_name": "com.example.hilotproto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb_ty5dxhceMew5VWA6DHrwPhqS2cEI1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
