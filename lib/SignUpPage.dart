@@ -1,29 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+// Énumération des types d'utilisateurs
 enum UserType { migrant, professionalSante, ong }
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateMixin {
+  // Clé pour le formulaire
   final _formKey = GlobalKey<FormState>();
+
+  // Contrôleurs d'animation
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  // Contrôleurs de texte
   final _nomController = TextEditingController();
   final _prenomController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  // Variables d'état
   UserType? _selectedUserType;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Configuration de l'animation
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+    _animationController.forward();
+  }
+
+  @override
   void dispose() {
+    // Libération des ressources
+    _animationController.dispose();
     _nomController.dispose();
     _prenomController.dispose();
     _emailController.dispose();
@@ -33,6 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
+  // Méthodes de validation
   String? _validateRequired(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
       return 'Veuillez entrer votre $fieldName';
@@ -82,11 +110,14 @@ class _SignUpPageState extends State<SignUpPage> {
     return null;
   }
 
+  // Méthode de gestion de l'inscription
   Future<void> _handleSignUp() async {
+    // Validation du formulaire
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    // Vérification du type d'utilisateur
     if (_selectedUserType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -97,10 +128,11 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
+    // Début du chargement
     setState(() => _isLoading = true);
 
     try {
-      // Simuler l'inscription - À remplacer par votre logique d'inscription
+      // Simulation de l'inscription
       await Future.delayed(const Duration(seconds: 2));
 
       if (!mounted) return;
@@ -113,9 +145,11 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       );
 
-      Navigator.pop(context); // Retour à la page de connexion
+      // Retour à la page précédente
+      Navigator.pop(context);
 
     } catch (e) {
+      // Gestion des erreurs
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -125,6 +159,7 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       );
     } finally {
+      // Fin du chargement
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -134,64 +169,207 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inscription'),
-        centerTitle: true,
-        backgroundColor: Colors.lightBlue,
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Créer un compte',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // En-tête
+                Text(
+                  'Créer un compte',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue[700],
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                Text(
+                  'Choisissez votre type de profil',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 32),
 
-              // Type d'utilisateur
-              const Text(
-                'Type de profil',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              _buildUserTypeSelector(),
-            ],
+                // Sélecteur de type d'utilisateur
+                _buildUserTypeSelector(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  // Construction du sélecteur de type d'utilisateur
   Widget _buildUserTypeSelector() {
     return Column(
       children: UserType.values.map((type) {
-        return Column(
-          children: [
-            _buildUserTypeOption(
-              type,
-              _getTitle(type),
-              _getDescription(type),
-              _getIcon(type),
-            ),
-            if (_selectedUserType == type) _buildSignUpForm(),
-            const SizedBox(height: 16), // Add spacing between options
-          ],
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                  color: _selectedUserType == type
+                      ? Colors.blue[50]
+                      : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                      color: _selectedUserType == type
+                          ? Colors.blue[300]!
+                          : Colors.transparent,
+                      width: 2
+                  ),
+                ),
+                child: _buildUserTypeOption(
+                  type,
+                  _getTitle(type),
+                  _getDescription(type),
+                  _getIcon(type),
+                ),
+              ),
+              // Ajout du formulaire conditionnel
+              if (_selectedUserType == type)
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  padding: const EdgeInsets.only(top: 16),
+                  child: _buildSignUpForm(),
+                ),
+            ],
+          ),
         );
       }).toList(),
     );
   }
 
+  // Construction d'une option de type d'utilisateur
+  Widget _buildUserTypeOption(UserType type, String title, String description, IconData icon) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.blue[700], size: 36),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.blue[800],
+        ),
+      ),
+      subtitle: Text(description),
+      trailing: Radio<UserType>(
+        value: type,
+        groupValue: _selectedUserType,
+        onChanged: (UserType? value) {
+          setState(() {
+            _selectedUserType = _selectedUserType == value ? null : value;
+          });
+        },
+        activeColor: Colors.blue[700],
+      ),
+      onTap: () {
+        setState(() {
+          _selectedUserType = _selectedUserType == type ? null : type;
+        });
+      },
+    );
+  }
+
+  // Construction du formulaire d'inscription
+  Widget _buildSignUpForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Champs de saisie
+          _buildTextField(
+            controller: _nomController,
+            label: 'Nom',
+            validator: (value) => _validateRequired(value, 'nom'),
+          ),
+          const SizedBox(height: 16),
+
+          _buildTextField(
+            controller: _prenomController,
+            label: 'Prénom',
+            validator: (value) => _validateRequired(value, 'prénom'),
+          ),
+          const SizedBox(height: 16),
+
+          _buildTextField(
+            controller: _emailController,
+            label: 'Email',
+            keyboardType: TextInputType.emailAddress,
+            validator: _validateEmail,
+          ),
+          const SizedBox(height: 16),
+
+          _buildTextField(
+            controller: _phoneController,
+            label: 'Numéro de téléphone',
+            keyboardType: TextInputType.phone,
+            validator: _validatePhone,
+          ),
+          const SizedBox(height: 16),
+
+          // Champs de mot de passe
+          _buildPasswordField(
+            controller: _passwordController,
+            label: 'Mot de passe',
+            obscureText: _obscurePassword,
+            onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
+            validator: _validatePassword,
+          ),
+          const SizedBox(height: 16),
+
+          _buildPasswordField(
+            controller: _confirmPasswordController,
+            label: 'Confirmer le mot de passe',
+            obscureText: _obscureConfirmPassword,
+            onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+            validator: _validateConfirmPassword,
+          ),
+          const SizedBox(height: 32),
+
+          // Bouton d'inscription
+          ElevatedButton(
+            onPressed: _isLoading ? null : _handleSignUp,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue[700],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: _isLoading
+                ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+                : const Text(
+              'S\'inscrire',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Méthodes utilitaires pour les titres, descriptions et icônes
   String _getTitle(UserType type) {
     switch (type) {
       case UserType.migrant:
@@ -225,117 +403,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  Widget _buildUserTypeOption(UserType type, String title, String description, IconData icon) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: Colors.lightBlue[50],
-      child: RadioListTile<UserType>(
-        value: type,
-        groupValue: _selectedUserType,
-        onChanged: (UserType? value) {
-          setState(() {
-            _selectedUserType = _selectedUserType == value ? null : value;
-          });
-        },
-        title: Row(
-          children: [
-            Icon(icon, color: Colors.blue),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        subtitle: Text(description),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      ),
-    );
-  }
-
-  Widget _buildSignUpForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildTextField(
-            controller: _nomController,
-            label: 'Nom',
-            validator: (value) => _validateRequired(value, 'nom'),
-          ),
-          const SizedBox(height: 16),
-
-          _buildTextField(
-            controller: _prenomController,
-            label: 'Prénom',
-            validator: (value) => _validateRequired(value, 'prénom'),
-          ),
-          const SizedBox(height: 16),
-
-          _buildTextField(
-            controller: _emailController,
-            label: 'Email',
-            keyboardType: TextInputType.emailAddress,
-            validator: _validateEmail,
-          ),
-          const SizedBox(height: 16),
-
-          _buildTextField(
-            controller: _phoneController,
-            label: 'Numéro de téléphone',
-            keyboardType: TextInputType.phone,
-            validator: _validatePhone,
-          ),
-          const SizedBox(height: 16),
-
-          _buildPasswordField(
-            controller: _passwordController,
-            label: 'Mot de passe',
-            obscureText: _obscurePassword,
-            onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
-            validator: _validatePassword,
-          ),
-          const SizedBox(height: 16),
-
-          _buildPasswordField(
-            controller: _confirmPasswordController,
-            label: 'Confirmer le mot de passe',
-            obscureText: _obscureConfirmPassword,
-            onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-            validator: _validateConfirmPassword,
-          ),
-          const SizedBox(height: 32),
-
-          ElevatedButton(
-            onPressed: _isLoading ? null : _handleSignUp,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.lightBlue,
-            ),
-            child: _isLoading
-                ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-                : const Text(
-              'S\'inscrire',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
+  // Méthode de construction de champ de texte standard
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -346,7 +414,11 @@ class _SignUpPageState extends State<SignUpPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        filled: true,
+        fillColor: Colors.grey[100],
       ),
       keyboardType: keyboardType,
       validator: validator,
@@ -354,6 +426,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+  // Méthode de construction de champ de mot de passe
   Widget _buildPasswordField({
     required TextEditingController controller,
     required String label,
@@ -365,7 +438,11 @@ class _SignUpPageState extends State<SignUpPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        filled: true,
+        fillColor: Colors.grey[100],
         suffixIcon: IconButton(
           icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
           onPressed: onToggleVisibility,
