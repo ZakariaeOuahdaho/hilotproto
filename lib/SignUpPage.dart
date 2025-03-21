@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 enum UserType { migrant, professionalSante, ong }
 
@@ -138,11 +137,11 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         title: const Text('Inscription'),
         centerTitle: true,
+        backgroundColor: Colors.lightBlue,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -163,79 +162,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               _buildUserTypeSelector(),
-              const SizedBox(height: 24),
-
-              // Informations personnelles
-              _buildTextField(
-                controller: _nomController,
-                label: 'Nom',
-                validator: (value) => _validateRequired(value, 'nom'),
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _prenomController,
-                label: 'Prénom',
-                validator: (value) => _validateRequired(value, 'prénom'),
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _emailController,
-                label: 'Email',
-                keyboardType: TextInputType.emailAddress,
-                validator: _validateEmail,
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _phoneController,
-                label: 'Numéro de téléphone',
-                keyboardType: TextInputType.phone,
-                validator: _validatePhone,
-              ),
-              const SizedBox(height: 16),
-
-              _buildPasswordField(
-                controller: _passwordController,
-                label: 'Mot de passe',
-                obscureText: _obscurePassword,
-                onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
-                validator: _validatePassword,
-              ),
-              const SizedBox(height: 16),
-
-              _buildPasswordField(
-                controller: _confirmPasswordController,
-                label: 'Confirmer le mot de passe',
-                obscureText: _obscureConfirmPassword,
-                onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                validator: _validateConfirmPassword,
-              ),
-              const SizedBox(height: 32),
-
-              ElevatedButton(
-                onPressed: _isLoading ? null : _handleSignUp,
-                child: _isLoading
-                    ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-                    : const Text(
-                  'S\'inscrire',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -244,46 +174,165 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildUserTypeSelector() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
+    return Column(
+      children: UserType.values.map((type) {
+        return Column(
+          children: [
+            _buildUserTypeOption(
+              type,
+              _getTitle(type),
+              _getDescription(type),
+              _getIcon(type),
+            ),
+            if (_selectedUserType == type) _buildSignUpForm(),
+            const SizedBox(height: 16), // Add spacing between options
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+  String _getTitle(UserType type) {
+    switch (type) {
+      case UserType.migrant:
+        return 'Migrant';
+      case UserType.professionalSante:
+        return 'Professionnel de santé';
+      case UserType.ong:
+        return 'ONG';
+    }
+  }
+
+  String _getDescription(UserType type) {
+    switch (type) {
+      case UserType.migrant:
+        return 'Pour les personnes en situation de migration';
+      case UserType.professionalSante:
+        return 'Pour les médecins et personnels soignants';
+      case UserType.ong:
+        return 'Pour les organisations non gouvernementales';
+    }
+  }
+
+  IconData _getIcon(UserType type) {
+    switch (type) {
+      case UserType.migrant:
+        return Icons.person;
+      case UserType.professionalSante:
+        return Icons.medical_services;
+      case UserType.ong:
+        return Icons.group;
+    }
+  }
+
+  Widget _buildUserTypeOption(UserType type, String title, String description, IconData icon) {
+    return Card(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        children: [
-          _buildUserTypeOption(
-            UserType.migrant,
-            'Migrant',
-            'Pour les personnes en situation de migration',
-          ),
-          _buildUserTypeOption(
-            UserType.professionalSante,
-            'Professionnel de santé',
-            'Pour les médecins et personnels soignants',
-          ),
-          _buildUserTypeOption(
-            UserType.ong,
-            'ONG',
-            'Pour les organisations non gouvernementales',
-          ),
-        ],
+      color: Colors.lightBlue[50],
+      child: RadioListTile<UserType>(
+        value: type,
+        groupValue: _selectedUserType,
+        onChanged: (UserType? value) {
+          setState(() {
+            _selectedUserType = _selectedUserType == value ? null : value;
+          });
+        },
+        title: Row(
+          children: [
+            Icon(icon, color: Colors.blue),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        subtitle: Text(description),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),
     );
   }
 
-  Widget _buildUserTypeOption(UserType type, String title, String description) {
-    return RadioListTile<UserType>(
-      value: type,
-      groupValue: _selectedUserType,
-      onChanged: (UserType? value) {
-        setState(() => _selectedUserType = value);
-      },
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+  Widget _buildSignUpForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildTextField(
+            controller: _nomController,
+            label: 'Nom',
+            validator: (value) => _validateRequired(value, 'nom'),
+          ),
+          const SizedBox(height: 16),
+
+          _buildTextField(
+            controller: _prenomController,
+            label: 'Prénom',
+            validator: (value) => _validateRequired(value, 'prénom'),
+          ),
+          const SizedBox(height: 16),
+
+          _buildTextField(
+            controller: _emailController,
+            label: 'Email',
+            keyboardType: TextInputType.emailAddress,
+            validator: _validateEmail,
+          ),
+          const SizedBox(height: 16),
+
+          _buildTextField(
+            controller: _phoneController,
+            label: 'Numéro de téléphone',
+            keyboardType: TextInputType.phone,
+            validator: _validatePhone,
+          ),
+          const SizedBox(height: 16),
+
+          _buildPasswordField(
+            controller: _passwordController,
+            label: 'Mot de passe',
+            obscureText: _obscurePassword,
+            onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
+            validator: _validatePassword,
+          ),
+          const SizedBox(height: 16),
+
+          _buildPasswordField(
+            controller: _confirmPasswordController,
+            label: 'Confirmer le mot de passe',
+            obscureText: _obscureConfirmPassword,
+            onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+            validator: _validateConfirmPassword,
+          ),
+          const SizedBox(height: 32),
+
+          ElevatedButton(
+            onPressed: _isLoading ? null : _handleSignUp,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.lightBlue,
+            ),
+            child: _isLoading
+                ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+                : const Text(
+              'S\'inscrire',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
-      subtitle: Text(description),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     );
   }
 

@@ -1,0 +1,2 @@
+D:/hilotproto/android/app/.cxx/Debug/4i5y651f/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/hilotproto/android/app/.cxx/Debug/4i5y651f/armeabi-v7a/CMakeFiles/rebuild_cache.dir
