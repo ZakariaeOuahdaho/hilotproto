@@ -1,75 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+// Importez vos écrans
 import 'home_section.dart';
-import 'profile_section.dart';
 import 'info_section.dart';
+import 'profile_section.dart';
 
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({super.key});
+  const NavigationScreen({Key? key}) : super(key: key);
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
+  // Index de la page sélectionnée
   int _selectedIndex = 0;
 
-
+  // Titres correspondant à chaque écran
   final List<String> _titles = [
     'Accueil',
-    'Compte',
     'Informations',
+    'Profil',
   ];
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const InfoScreen(),
-  ];
+  // Liste des écrans
+  late List<Widget> _screens;
 
-  // Template basique pour HomeScreen
-  Widget _buildHomeScreen() {
-    return Container(
-      color: Colors.white,
-      child: const Center(
-        child: Text(
-          'Page d\'accueil',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    // Initialisation des écrans
+    _screens = [
+      const HomeSection(),
+      const HomePage(),     // Modifié pour correspondre à la classe
+      const ProfileSection(),
+    ];
+
+    // Configuration de l'orientation de l'écran
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
-
-  Widget _buildInfoScreen() {
-    return Container(
-      color: Colors.white,
-      child: const Center(
-        child: Text(
-          'Page d\'informations',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    // Réinitialiser les orientations à la sortie
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar avec titre dynamique
-      appBar: _selectedIndex != 1 ? AppBar(
+      // AppBar conditionnelle
+      appBar: _selectedIndex != 2
+          ? AppBar(
         title: Text(
           _titles[_selectedIndex],
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: Colors.blue[800],
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-      ) : null,
+        centerTitle: true,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+        ),
+      )
+          : null,
 
+      // Corps de l'application avec l'écran sélectionné
       body: _screens[_selectedIndex],
 
+      // Barre de navigation inférieure
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
@@ -93,104 +107,29 @@ class _NavigationScreenState extends State<NavigationScreen> {
           elevation: 0,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           animationDuration: const Duration(milliseconds: 500),
-          destinations: const [
+          destinations: [
+            // Destination Accueil
             NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined, color: Colors.grey),
+              selectedIcon: Icon(Icons.home, color: Colors.blue[800]),
               label: 'Accueil',
             ),
+
+            // Destination Informations
             NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'Compte',
+              icon: Icon(Icons.info_outline, color: Colors.grey),
+              selectedIcon: Icon(Icons.info, color: Colors.blue[800]),
+              label: 'Informations',
             ),
+
+            // Destination Profil
             NavigationDestination(
-              icon: Icon(Icons.info_outline),
-              selectedIcon: Icon(Icons.info),
-              label: 'Info',
+              icon: Icon(Icons.person_outline, color: Colors.grey),
+              selectedIcon: Icon(Icons.person, color: Colors.blue[800]),
+              label: 'Profil',
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// Template basique pour HomeScreen
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.home,
-            size: 150,
-            color: Colors.blue,
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            ' Hilot',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'test test',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Template basique pour InfoScreen
-class InfoScreen extends StatelessWidget {
-  const InfoScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.info,
-            size: 100,
-            color: Colors.blue,
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Informations',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'info',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
       ),
     );
   }

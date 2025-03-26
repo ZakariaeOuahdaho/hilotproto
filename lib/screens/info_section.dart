@@ -1,125 +1,103 @@
 import 'package:flutter/material.dart';
 
-class homepage extends StatelessWidget {
-  const homepage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue.shade800,
-        title: const Text(
-          'E-ilot',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context); // Back to the previous page
-          },
-        ),
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 30),
-          const Text(
-            "Our Services",
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          ServiceCard(
-            icon: Icons.health_and_safety,
-            title: "Prévention",
-            subtitle: "Anticiper & Protéger",
-            color: Colors.blue.shade200,
-            onTap: () {
-              _showServiceDetailsDialog(
-                context,
-                title: "Prévention",
-                description:
-                "La prévention est essentielle pour anticiper les risques et protéger votre santé. Nous vous accompagnons avec des conseils personnalisés et des outils pour rester en bonne santé.",
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          ServiceCard(
-            icon: Icons.local_hospital,
-            title: "Télémédecine",
-            subtitle: "Consulter & Suivre",
-            color: Colors.lightBlue.shade100,
-            onTap: () {
-              _showServiceDetailsDialog(
-                context,
-                title: "Télémédecine",
-                description:
-                "La télémédecine vous permet de consulter un médecin à distance et de suivre votre santé en temps réel. Pratique, rapide et sécurisé.",
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          ServiceCard(
-            icon: Icons.groups,
-            title: "Collaboration Médicale",
-            subtitle: "Partager & Coordonner",
-            color: Colors.orange.shade100,
-            onTap: () {
-              _showServiceDetailsDialog(
-                context,
-                title: "Collaboration Médicale",
-                description:
-                "La collaboration médicale permet aux professionnels de santé de partager des informations et de coordonner les soins pour une prise en charge optimale.",
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          const Spacer(), // Pushes the button to the bottom
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SizedBox(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // En-tête personnalisé
+            Container(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Add login functionality
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade800,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  'Log In',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+              padding: const EdgeInsets.all(16.0),
+              color: Colors.blue.shade800,
+              child: Text(
+                'Hilot',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '',
-          ),
-        ],
+
+            // Titre principal
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),
+              child: Text(
+                "Nos Services",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade800,
+                ),
+              ),
+            ),
+
+            // Liste des services
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  ServiceCard(
+                    icon: Icons.health_and_safety,
+                    title: "Prévention",
+                    subtitle: "Anticiper & Protéger",
+                    color: Colors.blue.shade100,
+                    onTap: () {
+                      _showServiceDetailsDialog(
+                        context,
+                        title: "Prévention",
+                        description:
+                        "La prévention est essentielle pour anticiper les risques et protéger votre santé. Nous vous accompagnons avec des conseils personnalisés et des outils pour rester en bonne santé.",
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ServiceCard(
+                    icon: Icons.local_hospital,
+                    title: "Télémédecine",
+                    subtitle: "Consulter & Suivre",
+                    color: Colors.lightBlue.shade100,
+                    onTap: () {
+                      _showServiceDetailsDialog(
+                        context,
+                        title: "Télémédecine",
+                        description:
+                        "La télémédecine vous permet de consulter un médecin à distance et de suivre votre santé en temps réel. Pratique, rapide et sécurisé.",
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ServiceCard(
+                    icon: Icons.groups,
+                    title: "Collaboration Médicale",
+                    subtitle: "Partager & Coordonner",
+                    color: Colors.orange.shade100,
+                    onTap: () {
+                      _showServiceDetailsDialog(
+                        context,
+                        title: "Collaboration Médicale",
+                        description:
+                        "La collaboration médicale permet aux professionnels de santé de partager des informations et de coordonner les soins pour une prise en charge optimale.",
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // Function to show the service details dialog
+  // Méthode pour afficher les détails du service
   void _showServiceDetailsDialog(BuildContext context, {required String title, required String description}) {
     showDialog(
       context: context,
@@ -131,14 +109,16 @@ class homepage extends StatelessWidget {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -158,30 +138,37 @@ class ServiceCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const ServiceCard({
-    super.key,
+    Key? key,
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.color,
     this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
           backgroundColor: color,
           child: Icon(icon, color: Colors.white),
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.blue.shade800,
+          ),
         ),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.arrow_forward_ios),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(color: Colors.grey.shade600),
+        ),
+        trailing: Icon(Icons.chevron_right, color: Colors.blue.shade800),
         onTap: onTap,
       ),
     );
