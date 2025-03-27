@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'home_section.dart';
 import 'info_section.dart';
 import 'profile_section.dart';
+import 'health_section.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({Key? key}) : super(key: key);
@@ -21,6 +22,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   final List<String> _titles = [
     'Accueil',
     'Informations',
+    'Santé',
     'Profil',
   ];
 
@@ -33,7 +35,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
     // Initialisation des écrans
     _screens = [
       const HomeSection(),
-      const HomePage(),     // Modifié pour correspondre à la classe
+      const HomePage(),
+      const HealthSection(), // Nouvelle section Santé
       const ProfileSection(),
     ];
 
@@ -45,22 +48,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
   }
 
   @override
-  void dispose() {
-    // Réinitialiser les orientations à la sortie
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       // AppBar conditionnelle
-      appBar: _selectedIndex != 2
+      appBar: _selectedIndex != 2 && _selectedIndex != 3
           ? AppBar(
         title: Text(
           _titles[_selectedIndex],
@@ -120,6 +111,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
               icon: Icon(Icons.info_outline, color: Colors.grey),
               selectedIcon: Icon(Icons.info, color: Colors.blue[800]),
               label: 'Informations',
+            ),
+
+            // Destination Santé
+            NavigationDestination(
+              icon: Icon(Icons.favorite_border, color: Colors.grey),
+              selectedIcon: Icon(Icons.favorite, color: Colors.blue[800]),
+              label: 'Santé',
             ),
 
             // Destination Profil

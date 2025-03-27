@@ -17,7 +17,7 @@ class _ProfileSectionState extends State<ProfileSection> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -26,7 +26,7 @@ class _ProfileSectionState extends State<ProfileSection> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'My Profile',
+                      'Mon Profil',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -42,38 +42,31 @@ class _ProfileSectionState extends State<ProfileSection> {
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 40),
 
                 // Photo de profil
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.blue[100],
-                      backgroundImage: const NetworkImage(
-                        'https://example.com/profile-image.jpg', // Remplacez par l'URL de l'image
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4),
-                        ),
-                      ),
-                    ),
-                  ],
+                CircleAvatar(
+                  radius: 70,
+                  backgroundColor: Colors.blue[100],
+                  child: Icon(
+                    Icons.person,
+                    size: 70,
+                    color: Colors.blue[800],
+                  ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
                 // Informations de l'utilisateur
                 Text(
-                  'utilisateur',
+                  'test Hilot',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue[800],
                   ),
                 ),
+                const SizedBox(height: 8),
                 Text(
                   'testhilot@gmail.com',
                   style: TextStyle(
@@ -81,90 +74,125 @@ class _ProfileSectionState extends State<ProfileSection> {
                     color: Colors.grey[600],
                   ),
                 ),
+                const SizedBox(height: 8),
                 Text(
-                  '+212*********',
+                  '+212********',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
                   ),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
 
-                // Options du profil
-                _buildProfileOption(
-                  icon: Icons.dark_mode_outlined,
-                  iconColor: Colors.grey,
-                  title: 'Dark Mode',
-                  trailing: Switch(
-                    value: _darkModeEnabled,
-                    onChanged: (bool value) {
-                      setState(() {
-                        _darkModeEnabled = value;
-                      });
-                    },
-                    activeColor: Colors.blue[800],
-                  ),
+                // Options du profil avec plus d'espacement
+                _buildProfileSection(
+                  children: [
+                    _buildProfileOption(
+                      icon: Icons.dark_mode_outlined,
+                      iconColor: Colors.grey,
+                      title: 'mode sombre',
+                      trailing: Switch(
+                        value: _darkModeEnabled,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _darkModeEnabled = value;
+                          });
+                        },
+                        activeColor: Colors.blue[800],
+                      ),
+                    ),
+                  ],
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 20),  // Espacement entre les sections
 
-                _buildProfileOption(
-                  icon: Icons.person_outline,
-                  iconColor: Colors.blue,
-                  title: 'information personnelle',
-                  onTap: () {
-                    // Navigation vers les informations personnelles
-                  },
+                _buildProfileSection(
+                  children: [
+                    _buildProfileOption(
+                      icon: Icons.person_outline,
+                      iconColor: Colors.blue,
+                      title: 'profil',
+                      onTap: () {
+                        // Navigation vers les informations personnelles
+                      },
+                    ),
+                    _buildDivider(), // Ajout d'un séparateur
+                    _buildProfileOption(
+                      icon: Icons.account_balance_outlined,
+                      iconColor: Colors.orange,
+                      title: 'sécurité',
+                      onTap: () {
+                        // Navigation vers les informations bancaires
+                      },
+                    ),
+                  ],
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 20),  // Espacement entre les sections
 
-                _buildProfileOption(
-                  icon: Icons.account_balance_outlined,
-                  iconColor: Colors.orange,
-                  title: 'documents',
-                  onTap: () {
-                    // Navigation vers les informations bancaires
-                  },
+                _buildProfileSection(
+                  children: [
+                    _buildProfileOption(
+                      icon: Icons.receipt_outlined,
+                      iconColor: Colors.red,
+                      title: 'documents administratifs',
+                      onTap: () {
+                        // Navigation vers les transactions
+                      },
+                    ),
+                    _buildDivider(), // Ajout d'un séparateur
+                    _buildProfileOption(
+                      icon: Icons.settings_outlined,
+                      iconColor: Colors.blue,
+                      title: 'paramètres',
+                      onTap: () {
+                        // Navigation vers les paramètres
+                      },
+                    ),
+                  ],
                 ),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 20),  // Espacement entre les sections
 
-                _buildProfileOption(
-                  icon: Icons.receipt_outlined,
-                  iconColor: Colors.red,
-                  title: 'notification',
-                  onTap: () {
-                    // Navigation vers les transactions
-                  },
-                ),
-
-                const SizedBox(height: 8),
-
-                _buildProfileOption(
-                  icon: Icons.settings_outlined,
-                  iconColor: Colors.blue,
-                  title: 'paramètres',
-                  onTap: () {
-                    // Navigation vers les paramètres
-                  },
-                ),
-
-                const SizedBox(height: 8),
-
-                _buildProfileOption(
-                  icon: Icons.privacy_tip_outlined,
-                  iconColor: Colors.green,
-                  title: 'Sécurité',
-                  onTap: () {
-                    // Navigation vers la confidentialité des données
-                  },
+                _buildProfileSection(
+                  children: [
+                    _buildProfileOption(
+                      icon: Icons.privacy_tip_outlined,
+                      iconColor: Colors.green,
+                      title: 'donnée personnelle',
+                      onTap: () {
+                        // Navigation vers la confidentialité des données
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // Méthode pour créer un séparateur
+  Widget _buildDivider() {
+    return Divider(
+      height: 1,
+      color: Colors.grey[300],
+      indent: 70,  // Aligne le séparateur avec le texte
+    );
+  }
+
+  // Méthode pour créer une section de profil avec un arrière-plan
+  Widget _buildProfileSection({required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        children: children,
       ),
     );
   }

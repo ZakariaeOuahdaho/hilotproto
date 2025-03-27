@@ -373,7 +373,7 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
   String _getTitle(UserType type) {
     switch (type) {
       case UserType.migrant:
-        return 'Migrant';
+        return 'utilisateur';
       case UserType.professionalSante:
         return 'Professionnel de santé';
       case UserType.ong:
